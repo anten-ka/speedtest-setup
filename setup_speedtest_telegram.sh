@@ -148,7 +148,8 @@ echo -e "🌐 Быстрый VPS-хостинг с бонусом +15% при п
 echo -e "🔗 Ссылка: \e[1;34mhttp://vk.cc/czDwwy\e[0m"
 echo -e "🔗 Ссылка: \e[1;34mhttp://vk.cc/czDwwy\e[0m"
 echo -e "🔗 Ссылка: \e[1;34mhttp://vk.cc/czDwwy\e[0m"
-qrencode -t ANSI256 -s 5 "http://vk.cc/czDwwy"
+
+qrencode -t ANSI256 "http://vk.cc/czDwwy"
 echo -e "🟩====================================================================\n"
 
 exit 0
