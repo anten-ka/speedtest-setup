@@ -18,10 +18,39 @@ install_dependency() {
     fi
 }
 
-# 📌 Установка зависимостей
+# 📌 Удаление старой версии speedtest-cli
+remove_old_speedtest() {
+    if command -v speedtest-cli &> /dev/null; then
+        echo "🛠️ Удаляем устаревший speedtest-cli..."
+        sudo apt remove --purge speedtest-cli -y
+        sudo apt autoremove -y
+        rm -f /usr/local/bin/speedtest
+        rm -f /usr/bin/speedtest
+    fi
+}
+
+# 📌 Установка Ookla Speedtest CLI
+install_speedtest() {
+    if ! command -v speedtest &> /dev/null || ! speedtest --version | grep -q "Speedtest by Ookla"; then
+        echo "🛠️ Устанавливаем официальную версию Ookla Speedtest CLI..."
+        wget https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-linux-x86_64.tgz
+        tar -xvf ookla-speedtest-1.2.0-linux-x86_64.tgz
+        chmod +x speedtest
+        sudo mv speedtest /usr/local/bin/speedtest
+        rm -f ookla-speedtest-1.2.0-linux-x86_64.tgz
+    fi
+
+    echo "✅ Speedtest установлен:"
+    speedtest --version
+}
+
+# 📌 Проверка зависимостей
 install_dependency "jq" "sudo apt update && sudo apt install jq -y"
-install_dependency "speedtest" "sudo apt update && sudo apt install speedtest-cli -y"
 install_dependency "qrencode" "sudo apt update && sudo apt install qrencode -y"
+
+# 📌 Удаляем старую версию и устанавливаем официальную
+remove_old_speedtest
+install_speedtest
 
 # 📌 Запрос ID сервера
 read -p "Введите ID сервера для замера: " SERVER_ID
@@ -45,7 +74,7 @@ for i in {1..3}; do
     OUTPUT=$(speedtest -s "$SERVER_ID" --format=json 2>/dev/null)
     
     if [ -z "$OUTPUT" ]; then
-        echo "❌ Ошибка во время теста #$i. Пропускаем."
+        echo "❌ Ошибка во время теста #$i. Сервер с ID $SERVER_ID может быть недоступен."
         continue
     fi
 
@@ -67,40 +96,4 @@ for i in {1..3}; do
     echo -e "📡 Ping: \e[1;33m$PING_MS ms\e[0m"
 
     TOTAL_DOWNLOAD=$(echo "$TOTAL_DOWNLOAD + $DOWNLOAD" | bc)
-    TOTAL_UPLOAD=$(echo "$TOTAL_UPLOAD + $UPLOAD" | bc)
-    TOTAL_PING=$(echo "$TOTAL_PING + $PING" | bc)
-    SUCCESS_TESTS=$((SUCCESS_TESTS + 1))
-done
-
-# 📌 Проверка успешности тестов
-if [ "$SUCCESS_TESTS" -eq 0 ]; then
-    echo "❌ Не удалось получить данные с сервера. Проверьте ID сервера и попробуйте снова."
-    exit 1
-fi
-
-# 📌 Рассчёт средних значений
-AVG_DOWNLOAD=$(echo "scale=2; $TOTAL_DOWNLOAD / $SUCCESS_TESTS / 125000" | bc)
-AVG_UPLOAD=$(echo "scale=2; $TOTAL_UPLOAD / $SUCCESS_TESTS / 125000" | bc)
-AVG_PING=$(echo "scale=2; $TOTAL_PING / $SUCCESS_TESTS" | bc)
-
-# 📌 Финальный результат
-echo -e "\n🟩===================== [ ИТОГОВЫЙ РЕЗУЛЬТАТ ] ====================="
-echo -e "📊 Средняя скорость скачивания: \e[1;32m$AVG_DOWNLOAD Mbps\e[0m"
-echo -e "📊 Средняя скорость загрузки: \e[1;34m$AVG_UPLOAD Mbps\e[0m"
-echo -e "📊 Средний Ping: \e[1;33m$AVG_PING ms\e[0m"
-echo -e "🟩===============================================================\n"
-
-# 📌 Ссылка на хостинг с бонусом
-HOSTING_LINK="http://vk.cc/czDwwy"
-echo -e "🌟 \e[1;36mРекомендуемый хостинг с высокой скоростью и бонусом +15% к пополнению:\e[0m"
-echo -e "🔗 \e[1;36m$HOSTING_LINK\e[0m"
-echo -e "🔗 \e[1;36m$HOSTING_LINK\e[0m"
-echo -e "🔗 \e[1;36m$HOSTING_LINK\e[0m"
-
-# 📌 Генерация QR-кода для ссылки
-echo -e "\n📲 QR-код для быстрого доступа к ссылке:"
-qrencode -o qr_hosting.png -t ANSIUTF8 "$HOSTING_LINK"
-cat qr_hosting.png
-
-echo -e "\n✅ \e[1;32mТест завершён! Скопируйте ссылку или используйте QR-код для быстрого перехода.\e[0m"
-
+    TOTAL_U
