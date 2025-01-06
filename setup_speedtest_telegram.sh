@@ -63,7 +63,6 @@ install_speedtest() {
 
 install_dependency "jq" "sudo apt update && sudo apt install jq -y"
 install_dependency "qrencode" "sudo apt update && sudo apt install qrencode -y"
-install_dependency "qr" "sudo apt update && sudo apt install qr -y"
 
 # 📌 Удаляем старую версию и устанавливаем новую
 remove_old_speedtest
@@ -127,7 +126,7 @@ for i in {1..3}; do
 done
 
 # ============================ #
-# 📌 Вывод итогов             #
+# 📌 Рассчёт средних значений  #
 # ============================ #
 
 if [[ $SUCCESS_TESTS -gt 0 ]]; then
@@ -140,6 +139,7 @@ else
     AVG_PING=0
 fi
 
+# 📌 Вывод результатов
 echo -e "\n🟩===================== [ ИТОГОВЫЙ РЕЗУЛЬТАТ ] ====================="
 echo -e "📊 Средняя скорость скачивания: \e[1;32m$AVG_DOWNLOAD Mbps\e[0m"
 echo -e "📊 Средняя скорость загрузки: \e[1;34m$AVG_UPLOAD Mbps\e[0m"
@@ -151,9 +151,9 @@ echo -e "🌐 http://vk.cc/czDwwy"
 echo -e "🌐 http://vk.cc/czDwwy"
 echo -e "🌐 http://vk.cc/czDwwy"
 
-# 📌 QR-код для чаевых
+# 📌 QR-код чаевых
 echo -e "\n🟦 QR-код для чаевых:"
-qrencode -m 1 -t ANSI256 "https://pay.cloudtips.ru/p/7410814f"
+qrencode -t ANSI256 -s 1 "https://pay.cloudtips.ru/p/7410814f"
 
 echo -e "🟩===============================================================\n"
 
